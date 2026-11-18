@@ -205,7 +205,10 @@
     if (!n || !n.nodeValue || !n.nodeValue.trim()) return;
     if (!origText.has(n)) origText.set(n, n.nodeValue);
     var orig = origText.get(n);
-    n.nodeValue = (lang === 'en') ? t(orig) : orig;
+    var nv = (lang === 'en') ? t(orig) : orig;
+    // 关键：内容没变就不要写入——写入相同值也会触发 MutationObserver，
+    // 无条件写会造成「观察→写→再观察」死循环，把页面冻死
+    if (n.nodeValue !== nv) n.nodeValue = nv;
   }
   function trEl(el) {
     if (!el || !el.hasAttribute) return;
