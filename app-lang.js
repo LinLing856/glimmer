@@ -248,21 +248,41 @@
     walk(document.body);
   }
 
-  // 「更多」菜单注入语言切换按钮
+  // 语言切换按钮：放在头部操作区（打开即可见）；找不到头部结构时兜底注入「更多」菜单
+  function toggleLang() {
+    lang = (lang === 'zh') ? 'en' : 'zh';
+    try { localStorage.setItem(LANG_KEY, lang); } catch (e) {}
+    apply();
+    var lbl = document.getElementById('lang-label');
+    if (lbl) lbl.textContent = (lang === 'zh') ? 'EN' : '中';
+    if (typeof showToast === 'function') showToast(lang === 'zh' ? '已切换为中文' : 'Switched to English');
+  }
+
   function injectToggle() {
+    if (document.getElementById('btn-lang')) return;
+    var html = '<span class="btn-icon">🌐</span><span id="lang-label">' + (lang === 'zh' ? 'EN' : '中') + '</span>';
+
+    // 1) 首选：头部操作区，插在「捕捉微光」主按钮之前
+    var actions = document.querySelector('.header-actions');
+    var anchor = document.getElementById('btn-add');
+    if (actions && anchor) {
+      var hb = document.createElement('button');
+      hb.className = 'btn btn-ghost';
+      hb.id = 'btn-lang';
+      hb.title = '切换语言 / Switch language';
+      hb.innerHTML = html;
+      hb.onclick = toggleLang;
+      actions.insertBefore(hb, anchor);
+      return;
+    }
+    // 2) 兜底：注入「更多」菜单
     var menu = document.getElementById('more-dropdown');
-    if (!menu || document.getElementById('btn-lang')) return;
+    if (!menu) return;
     var b = document.createElement('button');
     b.className = 'btn btn-ghost dropdown-item';
     b.id = 'btn-lang';
-    b.innerHTML = '<span class="btn-icon">🌐</span>' + (lang === 'zh' ? 'English' : '中文');
-    b.onclick = function () {
-      lang = (lang === 'zh') ? 'en' : 'zh';
-      try { localStorage.setItem(LANG_KEY, lang); } catch (e) {}
-      apply();
-      b.innerHTML = '<span class="btn-icon">🌐</span>' + (lang === 'zh' ? 'English' : '中文');
-      if (typeof showToast === 'function') showToast(lang === 'zh' ? '已切换为中文' : 'Switched to English');
-    };
+    b.innerHTML = '<span class="btn-icon">🌐</span><span id="lang-label">' + (lang === 'zh' ? 'English' : '中文') + '</span>';
+    b.onclick = toggleLang;
     menu.appendChild(b);
   }
 
