@@ -214,8 +214,10 @@
   }
 
   // ===== 双向合并入口 =====
-  async function syncFromCloud() {
+  // silent=true：启动时静默模式——未配置 Token 就直接跳过，绝不弹窗挡住页面
+  async function syncFromCloud(silent) {
     if (!localStorage.getItem(TOKEN_KEY)) {
+      if (silent) { setStatus('off', '未连云端'); return; }
       const token = await showConfigModal(false);
       if (!token) { setStatus('off', '未连云端'); return; }
     }

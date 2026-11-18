@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-title" content="微光集">
 <link rel="apple-touch-icon" href="icons/icon-192.png">
   <link rel="icon" type="image/png" href="icons/icon-192.png">
-  <script src="cloud-sync.js"></script>
+  <script src="cloud-sync.js?v=3"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 :root{
@@ -409,28 +409,8 @@ body{background:linear-gradient(165deg,var(--bg-1),var(--bg-2) 48%,var(--bg-3))}
 .timeline-horizontal .event-item{width:220px}
 }
 </style>
-<script src="https://beacon.cdn.qq.com/sdk/4.5.9/beacon_web.min.js"></script>
-<script>
-(function(){
-  try{
-    var beacon=new BeaconAction({
-      appkey:'0WEB06U85YBSLJNL',
-      versionCode:'1.0.0',
-      channelID:'share',
-      delay:1000,
-      sessionDuration:30*60*1000,
-      isOversea:false,
-      needReportRqdEvent:false
-    });
-    beacon.onDirectUserAction('preview_page_view',{
-      'url':location.href,
-      'referrer':document.referrer,
-      'title':document.title,
-      'sandbox_id':'28f011f65c474cd2bab01cfc8333748f'
-    });
-  }catch(e){}
-})();
-</script></head>
+<!-- 已移除腾讯灯塔统计脚本（同步 CDN 加载，网络卡顿时会阻塞整个页面） -->
+</head>
 <body>
 <div class="particles" id="particles"></div>
 <header class="header">
@@ -872,8 +852,8 @@ async function loadData(){
   events.forEach(e=>{if(!e.timelineId)e.timelineId=currentTimelineId||timelines[0]?.id;});
   migrateEvents();
 
-  // 与云端双向合并同步
-  await syncFromCloud();
+  // 与云端双向合并同步（静默模式：未配置 Token 时跳过，不弹窗）
+  await syncFromCloud(true);
 
   // 同步后如果仍然没有任何时间线，创建一个默认的并推到云端
   if(timelines.length===0){
@@ -1874,6 +1854,6 @@ init();
   });
 })();
 </script>
-<script src="app-lang.js"></script>
+<script src="app-lang.js?v=3"></script>
 </body>
 </html>
